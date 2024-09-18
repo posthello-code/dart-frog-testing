@@ -1,4 +1,4 @@
-// routes/sign_in.dart
+// routes/tasks/sign_in.dart
 import 'dart:io';
 
 import 'package:app/authenticator.dart';
@@ -33,7 +33,12 @@ Future<Response> _onPost(RequestContext context) async {
     return Response(statusCode: HttpStatus.unauthorized);
   } else {
     return Response.json(
-      body: {'token': username},
+      body: {
+        'token': authenticator.generateToken(
+          username: username,
+          user: user,
+        ),
+      },
     );
   }
 }

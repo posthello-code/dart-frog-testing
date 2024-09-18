@@ -1,5 +1,6 @@
 // lib/authenticator.dart
 import 'package:app/user.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 class Authenticator {
   static const _users = {
@@ -35,7 +36,34 @@ class Authenticator {
     return null;
   }
 
-  User? verifyToken(String username) {
-    return _users[username];
+  User? verifyToken(String token) {
+    try {
+      final payload = JWT.verify(
+        token,
+        SecretKey('123'),
+      );
+
+      final payloadData = payload.payload as Map<String, dynamic>;
+
+      final username = payloadData['username'] as String;
+      return _users[username];
+    } catch (e) {
+      return null;
+    }
+  }
+
+  String generateToken({
+    required String username,
+    required User user,
+  }) {
+    final jwt = JWT(
+      {
+        'id': user.id,
+        'name': user.name,
+        'username': username,
+      },
+    );
+
+    return jwt.sign(SecretKey('123'));
   }
 }
